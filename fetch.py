@@ -27,10 +27,13 @@ def listToString(s):
 
 def get_tweets(queries,tweets_per_query):
     new_tweets = 0
+    #load friends
     listfrens=get_frens()
+    #eth address
+    eth_address="0xdb7d6c8d88ae3019da3fbede995d62323fc66881"
     for query in queries:
         print ("Starting new query: " + query)
-        for tweet in tweepy.Cursor(api.search, q=query, tweet_mode="extended").items(tweets_per_query ):
+        for tweet in tweepy.Cursor(api.search, q=query+" giveaway -filter:retweets", tweet_mode="extended").items(tweets_per_query ):
             user = tweet.user.screen_name
             id = tweet.id
             url = 'https://twitter.com/' + user +  '/status/' + str(id)
@@ -81,7 +84,11 @@ def get_tweets(queries,tweets_per_query):
                                     n=int(result[4])
                                 frens=random.sample(listfrens,n)
                                 frens_string=listToString(frens)
-                                api.update_status(frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
+                                if "eth address" in text:
+                                    api.update_status(frens_string+"  "+eth_address, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
+                                    print("\tETH address replied")
+                                else:
+                                    api.update_status(frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
                                 print("\tTagged "+str(n)+" frens",frens)
                             except:
                                 print('\tunable to tag freinds, try tagging manually')
@@ -128,6 +135,7 @@ def get_frens():
 
     
 #main
-queries = ["eth giveaway  -filter:retweets"]
-tweets_per_query  = 200
+keyword=input("which giveaway u want to search for\n")
+queries = [keyword] #list to store queries
+tweets_per_query  = int(input("no. of tweets to search for\n"))
 get_tweets(queries,tweets_per_query)
