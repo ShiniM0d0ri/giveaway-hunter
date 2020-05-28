@@ -27,7 +27,7 @@ def listToString(s):
 
 def get_tweets(queries,tweets_per_query):
     new_tweets = 0
-    listfrens=["@Vipinuniyal15","@vipinuniyal11","@NaiWakan","@Vjaykumar10"]
+    listfrens=get_frens()
     for query in queries:
         print ("Starting new query: " + query)
         for tweet in tweepy.Cursor(api.search, q=query, tweet_mode="extended").items(tweets_per_query ):
@@ -66,6 +66,25 @@ def get_tweets(queries,tweets_per_query):
                         tweet.retweet()
                         print("\tRetweeted")
                         new_tweets += 1
+                        #for tag..
+                        if "tag" in text:
+                            try:
+                                n=0
+                                pattern='tag\s\w'
+                                result = re.search(pattern, text).group()
+                                print(result)
+                                if result[4]=="a":
+                                    n=1
+                                elif result[4]=="y" or result[4]=="f":
+                                    n=2
+                                else:
+                                    n=int(result[4])
+                                frens=random.sample(listfrens,n)
+                                frens_string=listToString(frens)
+                                api.update_status(frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
+                                print("\tTagged "+str(n)+" frens",frens)
+                            except:
+                                print('\tunable to tag freinds, try tagging manually')
                     except tweepy.TweepError as e:
                         print('\tAlready Retweeted')
             
@@ -79,22 +98,7 @@ def get_tweets(queries,tweets_per_query):
                     except tweepy.TweepError as e:
                         print('\tAlready liked')
             
-            #for tag..
-            if "tag" in text:
-                n=0
-                pattern='tag\s\w'
-                result = re.search(pattern, text).group()
-                print(result)
-                if result[4]=="a":
-                    n=1
-                elif result[4]=="y":
-                    n=2
-                else:
-                    n=int(result[4])
-                frens=random.sample(listfrens,n)
-                frens_string=listToString(frens)
-                api.update_status("@" + user + " " + frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
-                print("\tTagged "+str(n)+" frens",frens)            
+            
             
             #for follow
             if "follow" in text:
@@ -113,12 +117,17 @@ def get_tweets(queries,tweets_per_query):
     print ("New Tweets: " + str(new_tweets))
 
 
-
+#fetch friends from a separate file named frens.txt
+def get_frens():
+    with open('frens.txt') as f:
+        cities = f.readlines()
+        cities = [x.strip() for x in cities]
+    return cities
 
 
 
     
 #main
-queries = ["huntsman giveaway"]
-tweets_per_query  = 50
+queries = ["ak-47 giveaway  -filter:retweets","eth giveaway  -filter:retweets"]
+tweets_per_query  = 200
 get_tweets(queries,tweets_per_query)
