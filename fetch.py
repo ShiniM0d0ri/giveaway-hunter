@@ -128,6 +128,6 @@ def get_frens():
 
     
 #main
-queries = ["ak-47 giveaway  -filter:retweets","eth giveaway  -filter:retweets"]
+queries = ["eth giveaway  -filter:retweets"]
 tweets_per_query  = 200
 get_tweets(queries,tweets_per_query)
