@@ -69,6 +69,10 @@ def get_tweets(queries,tweets_per_query):
                         tweet.retweet()
                         print("\tRetweeted")
                         new_tweets += 1
+
+                        if "eth address" in text:
+                            api.update_status(eth_address, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
+                            print("\tETH address replied")
                         #for tag..
                         if "tag" in text:
                             try:
@@ -84,11 +88,7 @@ def get_tweets(queries,tweets_per_query):
                                     n=int(result[4])
                                 frens=random.sample(listfrens,n)
                                 frens_string=listToString(frens)
-                                if "eth address" in text:
-                                    api.update_status(frens_string+"  "+eth_address, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
-                                    print("\tETH address replied")
-                                else:
-                                    api.update_status(frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
+                                api.update_status(frens_string, in_reply_to_status_id = str(id),auto_populate_reply_metadata=True)
                                 print("\tTagged "+str(n)+" frens",frens)
                             except:
                                 print('\tunable to tag freinds, try tagging manually')
