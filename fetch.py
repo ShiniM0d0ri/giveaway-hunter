@@ -3,6 +3,7 @@ import re
 import hidden #twitter keys
 import string
 import random
+import datetime
 
 # Twitter credentials for the app
 consumer_key = hidden.key[0]
@@ -45,22 +46,49 @@ def get_tweets(queries,tweets_per_query):
 
             # Check if tweet is a retweet
             if text.startswith("retweeted"):
-                print('Tweet appears to be a retweet [RETWEET]')
+                print('\tTweet appears to be a retweet [RETWEET]')
                 continue
             
             # Check if tweet is a retweet
             if text.startswith("rt @"):
-                print('Tweet appears to be a retweet [RETWEET]')
+                print('\tTweet appears to be a retweet [RETWEET]')
                 continue
             # Check if tweet is a reply
             if text.startswith("@"):
-                print('Tweet appears to be a reply [REPLY]')
+                print('\tTweet appears to be a reply [REPLY]')
                 continue
             # Check if tweet is a reply
             if tweet.is_quote_status == True:
-                print('Tweet appears to be a quote [QUOTE]')
+                print('\tTweet appears to be a quote [QUOTE]')
                 continue
+            # Check if tweet is a external link
+            if "with the link" in text or "gleam" in text or "come and join the" in text or "@SzymekJa" in text:
+                print('\tSkipping external link giveaway')
+                continue
+            # Check for fakes
+            if "@rambo_tuga" in text or "@csgoskinslucky" in text or "@ensigskins" in text or "@rihardinjss" in text or "@csgodarknet" in text or "@go_giveaway" in text or "@csgogamblecode1" in text:
+                print('\tSkipping fake giveaway')
+                continue
+            
+            #check if it ended already
+            """time_passed=None
+            time_left=0
+            if "ends in" in text:
+                pattern='(ends in)\s\d+\s\w+'
+                result = re.search(pattern, text).group()
+                time_left=int(re.search('\d+', result[8:]).group())
+                unit= re.search('[a-z]+', result[8:]).group()
 
+            if "rolling in" in text:
+                pattern='(rolling in)\s\d+\s\w+'
+                result = re.search(pattern, text).group()
+                time_left=int(re.search('\d+', result[11:]).group())
+                unit= re.search('[a-z]+', result[11:]).group()
+            
+            time_passed=tweet.created_at+ datetime.timedelta(hours=time_left)
+            
+            print(time_passed)
+            """
             #for Retweets
             #if not retweeted RT and tag frends
             if "retweet" in text or "rt" in text:
@@ -94,6 +122,7 @@ def get_tweets(queries,tweets_per_query):
                                 print('\tunable to tag freinds, try tagging manually')
                     except tweepy.TweepError as e:
                         print('\tAlready Retweeted')
+                        continue
             
             #for like
             if "like" in text:
@@ -117,7 +146,7 @@ def get_tweets(queries,tweets_per_query):
 
                 for screen_name in list(set(to_follow)):
                     api.create_friendship(screen_name)
-                    print('\t' + "Followed: " + screen_name)
+                    print('\t' + "Followed: " + screen_name)                    
             #if "subscribe" in text:
 
 
